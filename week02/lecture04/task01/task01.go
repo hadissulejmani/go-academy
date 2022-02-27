@@ -12,6 +12,9 @@ func daysInMonth(month int, year int) (int, bool) {
 	var daysInMonth int
 
 	if year%4 == 0 {
+		if month == 2 {
+			return 29, true
+		}
 		leapYear = true
 	}
 
@@ -20,6 +23,8 @@ func daysInMonth(month int, year int) (int, bool) {
 		daysInMonth = 31
 	case month%2 == 0 && month != 2:
 		daysInMonth = 30
+	case month == 2:
+		daysInMonth = 28
 	}
 	return daysInMonth, leapYear
 }
