@@ -3,7 +3,6 @@ package main
 import "fmt"
 
 func main() {
-
 	fmt.Println(daysInMonth(10, 2012))
 }
 
