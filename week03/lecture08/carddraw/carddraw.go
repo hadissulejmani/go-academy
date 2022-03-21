@@ -2,24 +2,22 @@ package carddraw
 
 import (
 	"cardgame"
+	"errors"
 )
 
 type dealer interface {
-	Deal() *cardgame.Card
+	Draw() *cardgame.Card
+	Done() bool
 }
 
-type Dealer []dealer
-
-func (d Dealer) Deal() *cardgame.Card {
-	return &cardgame.Card{}
-}
-
-func DrawAllCards(dealer Dealer) []cardgame.Card {
+func DrawAllCards(dealer dealer) ([]cardgame.Card, error) {
 	// call the dealer's Draw() method, until you reach a nil Card
 	cards := []cardgame.Card{}
-	for _, value := range dealer {
-		cards = append(cards, *value.Deal())
+	if dealer.Done() {
+		return nil, errors.New("Deck is empty")
 	}
-
-	return cards
+	for val := dealer.Draw(); val != nil; {
+		cards = append(cards, *val)
+	}
+	return cards, nil
 }

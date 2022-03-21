@@ -1,20 +1,20 @@
 package main
 
 import (
-	"carddraw"
 	"cardgame"
 	"fmt"
 )
 
 func main() {
-	deck := cardgame.Deck{}
-
-	dealer := carddraw.Dealer{}
-
-	for i := 0; i < 10; i++ {
-		dealer = append(dealer, cardgame.NewCard(int(i), int(i)))
+	cards := []cardgame.Card{
+		*cardgame.NewCard(1, 2),
+		*cardgame.NewCard(2, 2),
+		*cardgame.NewCard(3, 4),
+		*cardgame.NewCard(4, 1),
+		*cardgame.NewCard(1, 2),
 	}
 
-	carddraw.DrawAllCards(dealer)
-	fmt.Println(deck)
+	d := cardgame.NewDeck(cards)
+
+	fmt.Println(d)
 }
