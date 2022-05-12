@@ -1,0 +1,252 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a simple To Do server.",
+    "version": "1.0.6",
+    "title": "ScaleFocus GO Accademy To Do",
+    "contact": {
+      "email": "nikola.aleksandrov@scalefocus.com"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/api",
+  "paths": {
+    "/lists/{id}/tasks": {
+      "get": {
+        "tags": [
+          "Task"
+        ],
+        "summary": "Get tasks",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of List",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Task"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Task.",
+        "tags": [
+          "Task"
+        ],
+        "parameters": [
+          {
+            "name": "New Task",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of List",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }
+        }
+      }
+    },
+    "/lists/{id}": {
+      "delete": {
+        "tags": [
+          "List"
+        ],
+        "summary": "Delete list and the tasks inside it",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of List",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/lists": {
+      "post": {
+        "summary": "Create List.",
+        "tags": [
+          "List"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/List"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "List"
+        ],
+        "summary": "Get lists",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/List"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "patch": {
+        "tags": [
+          "Task"
+        ],
+        "summary": "Toggle task",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Toggle Taks",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "completed": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of Task",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Task"
+        ],
+        "summary": "Delete task",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Id of Task",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Task": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "text": {
+          "type": "string"
+        },
+        "listId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "completed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "List": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
