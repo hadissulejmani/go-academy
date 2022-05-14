@@ -10,16 +10,67 @@
   },
   "host": "localhost:3000",
   "basePath": "/api",
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic"
+    }
+  },
+  "security": [
+    {
+      "basicAuth": []
+    }
+  ],
   "paths": {
+    "/weather": {
+      "get": {
+        "tags": ["Weather"],
+        "summary": "weather",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "header",
+            "description": "latitude",
+            "required": true,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "lon",
+            "in": "header",
+            "description": "longitude",
+            "required": true,
+            "type": "number",
+            "format": "double"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/WeatherInfo"
+            }
+          }
+        }
+      }
+    },
+    "/list/export": {
+      "get": {
+        "tags": ["Export"],
+        "summary": "Get csv file",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
     "/lists/{id}/tasks": {
       "get": {
-        "tags": [
-          "Task"
-        ],
+        "tags": ["Task"],
         "summary": "Get tasks",
-        "produces": [
-          "application/json"
-        ],
+        "produces": ["application/json"],
         "parameters": [
           {
             "name": "id",
@@ -43,9 +94,7 @@
       },
       "post": {
         "summary": "Create Task.",
-        "tags": [
-          "Task"
-        ],
+        "tags": ["Task"],
         "parameters": [
           {
             "name": "New Task",
@@ -79,13 +128,9 @@
     },
     "/lists/{id}": {
       "delete": {
-        "tags": [
-          "List"
-        ],
+        "tags": ["List"],
         "summary": "Delete list and the tasks inside it",
-        "produces": [
-          "application/json"
-        ],
+        "produces": ["application/json"],
         "parameters": [
           {
             "name": "id",
@@ -105,9 +150,7 @@
     "/lists": {
       "post": {
         "summary": "Create List.",
-        "tags": [
-          "List"
-        ],
+        "tags": ["List"],
         "parameters": [
           {
             "in": "body",
@@ -132,13 +175,9 @@
         }
       },
       "get": {
-        "tags": [
-          "List"
-        ],
+        "tags": ["List"],
         "summary": "Get lists",
-        "produces": [
-          "application/json"
-        ],
+        "produces": ["application/json"],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -154,13 +193,9 @@
     },
     "/tasks/{id}": {
       "patch": {
-        "tags": [
-          "Task"
-        ],
+        "tags": ["Task"],
         "summary": "Toggle task",
-        "produces": [
-          "application/json"
-        ],
+        "produces": ["application/json"],
         "parameters": [
           {
             "name": "Toggle Taks",
@@ -192,13 +227,9 @@
         }
       },
       "delete": {
-        "tags": [
-          "Task"
-        ],
+        "tags": ["Task"],
         "summary": "Delete task",
-        "produces": [
-          "application/json"
-        ],
+        "produces": ["application/json"],
         "parameters": [
           {
             "name": "id",
@@ -244,6 +275,20 @@
           "format": "int64"
         },
         "name": {
+          "type": "string"
+        }
+      }
+    },
+    "WeatherInfo": {
+      "type": "object",
+      "properties": {
+        "formatedTemp": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "city": {
           "type": "string"
         }
       }
