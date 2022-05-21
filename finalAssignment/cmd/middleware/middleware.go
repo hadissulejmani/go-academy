@@ -2,16 +2,12 @@ package middleware
 
 import (
 	"context"
-	"encoding/json"
 	"final/cmd/models"
 	"fmt"
 	"log"
 	"math/rand"
-	"net/http"
 	"reflect"
 	"strconv"
-
-	"github.com/gorilla/mux"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -59,38 +55,6 @@ func init() {
 	tasks = client.Database(dbName).Collection(task_collection)
 
 	fmt.Println("Collection instance created!")
-}
-
-// TaskComplete update task route
-func TaskComplete(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	params := mux.Vars(r)
-	taskComplete(params["id"])
-	json.NewEncoder(w).Encode(params["id"])
-}
-
-// UndoTask undo the complete task route
-func UndoTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "PUT")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
-	params := mux.Vars(r)
-	undoTask(params["id"])
-	json.NewEncoder(w).Encode(params["id"])
-}
-
-// DeleteAllTask delete all tasks route
-func DeleteAllTask(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Context-Type", "application/x-www-form-urlencoded")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	count := deleteAllTask()
-	json.NewEncoder(w).Encode(count)
 }
 
 // get all task from the DB and return it
@@ -167,8 +131,11 @@ func InsertList(list models.List) {
 //Insert one task in the DB
 func InsertTask(task models.Task) {
 	if task.ID == 0 {
-		task.ID = int64(rand.Uint64())
+		id := rand.Intn(1000000)
+		task.ID = int64(id)
 	}
+
+	log.Println(task.ID)
 
 	insertResult, err := tasks.InsertOne(context.Background(), task)
 	if err != nil {
@@ -179,11 +146,10 @@ func InsertTask(task models.Task) {
 }
 
 // task complete method, update task's status to true
-func taskComplete(task string) {
-	fmt.Println(task)
-	id, _ := primitive.ObjectIDFromHex(task)
+func UpdateTask(id int64) {
+	fmt.Println(id)
 	filter := bson.M{"_id": id}
-	update := bson.M{"$set": bson.M{"status": true}}
+	update := bson.M{"$set": bson.M{"completed": true}}
 	result, err := tasks.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		log.Fatal(err)
@@ -192,26 +158,14 @@ func taskComplete(task string) {
 	fmt.Println("modified count: ", result.ModifiedCount)
 }
 
-// task undo method, update task's status to false
-func undoTask(task string) {
-	fmt.Println(task)
-	id, _ := primitive.ObjectIDFromHex(task)
-	filter := bson.M{"_id": id}
-	update := bson.M{"$set": bson.M{"status": false}}
-	result, err := tasks.UpdateOne(context.Background(), filter, update)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("modified count: ", result.ModifiedCount)
-}
-
-// delete one task from the DB, delete by ID
+// delete one list from the DB, delete by ID
 func DeleteOneList(list string) error {
 	fmt.Println(list)
 	id, _ := strconv.Atoi(list)
 	filter := bson.M{"_id": id}
 	d, err := lists.DeleteOne(context.Background(), filter)
+	tasks.DeleteMany(context.Background(), bson.M{"listId": id})
+
 	fmt.Println("Deleted Document", d.DeletedCount)
 	if err != nil {
 		return err
@@ -219,13 +173,16 @@ func DeleteOneList(list string) error {
 	return nil
 }
 
-// delete all the tasks from the DB
-func deleteAllTask() int64 {
-	d, err := lists.DeleteMany(context.Background(), bson.D{{}}, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
+// delete one task from the DB, delete by ID
+func DeleteOneTask(task string) error {
+	fmt.Println(task)
+	id, _ := strconv.Atoi(task)
+	filter := bson.M{"_id": id}
+	d, err := tasks.DeleteOne(context.Background(), filter)
 
 	fmt.Println("Deleted Document", d.DeletedCount)
-	return d.DeletedCount
+	if err != nil {
+		return err
+	}
+	return nil
 }

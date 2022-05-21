@@ -25,14 +25,64 @@ func main() {
 		}
 	})
 
-	// Add your handler (API endpoint) registrations here
-	router.GET("/api", func(ctx echo.Context) error {
-		return ctx.JSON(200, "Hello, World!")
+	router.GET("api/lists/:id/tasks", func(ctx echo.Context) error {
+		ctx.Response().Header().Set("Context-Type", "application/x-www-form-urlencoded")
+		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "GET")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		param := ctx.Param("id")
+		log.Println(param)
+		payload := middleware.GetAllTasks(param)
+
+		return json.NewEncoder(ctx.Response()).Encode(payload)
+	})
+
+	router.POST("api/lists/:id/tasks", func(ctx echo.Context) error {
+		ctx.Response().Header().Set("Context-Type", "application/x-www-form-urlencoded")
+		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "POST")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		var task models.Task
+		id := ctx.Param("id")
+		i, _ := strconv.ParseInt(id, 10, 64)
+		task.ListId = i
+		_ = json.NewDecoder(ctx.Request().Body).Decode(&task)
+		middleware.InsertTask(task)
+
+		return json.NewEncoder(ctx.Response()).Encode(task)
+	})
+
+	router.PATCH("api/tasks/:id", func(ctx echo.Context) error {
+		ctx.Response().Header().Set("Content-Type", "application/x-www-form-urlencoded")
+		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "PATCH")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		id := ctx.Param("id")
+		i, _ := strconv.ParseInt(id, 10, 64)
+		middleware.UpdateTask(i)
+
+		return json.NewEncoder(ctx.Response()).Encode(i)
+	})
+
+	router.DELETE("api/tasks/:id", func(ctx echo.Context) error {
+		ctx.Response().Header().Set("Context-Type", "application/x-www-form-urlencoded")
+		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "DELETE")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+		param := ctx.Param("id")
+		err := middleware.DeleteOneTask(param)
+		return err
 	})
 
 	router.GET("api/lists", func(ctx echo.Context) error {
 		ctx.Response().Header().Set("Context-Type", "application/x-www-form-urlencoded")
 		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "DELETE")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		payload := middleware.GetAllLists()
 		return json.NewEncoder(ctx.Response()).Encode(payload)
 	})
@@ -61,32 +111,11 @@ func main() {
 		return err
 	})
 
-	router.GET("api/lists/:id/tasks", func(ctx echo.Context) error {
-		ctx.Response().Header().Set("Context-Type", "application/x-www-form-urlencoded")
-		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
-
-		param := ctx.Param("id")
-		log.Println(param)
-		payload := middleware.GetAllTasks(param)
-
-		return json.NewEncoder(ctx.Response()).Encode(payload)
-	})
-
-	router.POST("api/lists/:id/tasks", func(ctx echo.Context) error {
-		ctx.Response().Header().Set("Context-Type", "application/x-www-form-urlencoded")
-		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
-
-		var task models.Task
-		id := ctx.Param("id")
-		i, _ := strconv.ParseInt(id, 10, 64)
-		task.ListId = i
-		_ = json.NewDecoder(ctx.Request().Body).Decode(&task)
-		middleware.InsertTask(task)
-
-		return json.NewEncoder(ctx.Response()).Encode(task)
-	})
-
 	router.GET("api/weather", func(ctx echo.Context) error {
+		ctx.Response().Header().Set("Context-Type", "application/x-www-form-urlencoded")
+		ctx.Response().Header().Set("Access-Control-Allow-Origin", "*")
+		ctx.Response().Header().Set("Access-Control-Allow-Methods", "GET")
+		ctx.Response().Header().Set("Access-Control-Allow-Headers", "Content-Type")
 		apiConfig, err := weather.LoadApiConfig(".apiConfig")
 		if err != nil {
 			log.Println("Error loading api config key!")
