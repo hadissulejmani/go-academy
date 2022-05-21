@@ -1,0 +1,8 @@
+{
+    "version": "0.2.0",
+    "configuration": [
+        {
+          "program": "finalAssignment/cmd/echo/main.go",
+        }
+      ],
+}
