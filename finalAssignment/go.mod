@@ -7,6 +7,8 @@ require (
 	github.com/labstack/echo/v4 v4.7.2
 )
 
+require github.com/joho/godotenv v1.4.0 // indirect
+
 require (
 	github.com/flowchartsman/swaggerui v0.0.0-20210303154956-0e71c297862e // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect

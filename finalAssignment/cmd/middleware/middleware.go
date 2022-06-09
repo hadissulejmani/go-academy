@@ -6,24 +6,16 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"reflect"
 	"strconv"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-// DB connection string
-const connectionString = "mongodb+srv://admin:pflG9Rt4TfBqNddI@sandbox.k9bmp.mongodb.net/?retryWrites=true&w=majority"
-
-// Database Name
-const dbName = "test"
-
-// Collection name
-const list_collection = "to_do_list"
-const task_collection = "task"
 
 // collection object/instance
 var lists *mongo.Collection
@@ -31,6 +23,22 @@ var tasks *mongo.Collection
 
 // create connection with mongo db
 func init() {
+
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
+	// DB connection string
+	connectionString := os.Getenv("DB_URI")
+
+	// Database Name
+	dbName := os.Getenv("DB_NAME")
+
+	// Collection name
+	list_collection := os.Getenv("DB_LIST_COLLECTION_NAME")
+	task_collection := os.Getenv("DB_TASK_COLLECTION_NAME")
 
 	// Set client options
 	clientOptions := options.Client().ApplyURI(connectionString)
